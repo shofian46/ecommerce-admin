@@ -165,7 +165,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="rounded-full">
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
