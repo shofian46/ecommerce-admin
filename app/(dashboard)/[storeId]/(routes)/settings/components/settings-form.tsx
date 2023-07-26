@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -45,6 +45,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const title = initialData ? "Edit store" : "Create store";
+  const description = initialData ? "Edit a store" : "Add a new store";
+  const toastMessage = initialData ? "Store update" : "Store created.";
+  const action = initialData ? "Save changes" : "Create";
+
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
@@ -55,13 +60,32 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
       setLoading(true);
       await axios.patch(`/api/stores/${params.storeId}`, data);
       router.refresh();
-      toast.success("Store updated!");
+      toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
+
+  // const onSubmit = async (data: SettingsFormValues) => {
+  //   try {
+  //     setLoading(true);
+  //     if (initialData) {
+  //       await axios.patch(`/api/stores/${params.storeId}`, data);
+  //     } else {
+  //       await axios.post(`/api/stores`, data);
+  //     }
+
+  //     router.refresh();
+  //     router.push(`/${params.storeId}/settings`);
+  //     toast.success(toastMessage);
+  //   } catch (error) {
+  //     toast.error("Something went wrong.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const onDelete = async () => {
     try {
@@ -87,7 +111,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
         loading={loading}
       />
       <div className="flex items-center justify-between">
-        <Heading title="Settings" description="Manage store preferences" />
+        <Heading title={title} description={description} />
         <Button
           variant="destructive"
           size="icon"
@@ -107,13 +131,13 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
             <FormField
               control={form.control}
               name="name"
-              render={({ ...field }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Store Name"
+                      placeholder="Store Label"
                       {...field}
                     />
                   </FormControl>
@@ -128,13 +152,13 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
             className="ml-auto"
             type="submit"
           >
-            Save changes
+            {action}
           </Button>
         </form>
       </Form>
       <Separator />
       <ApiAlert
-        title="NEXT_PUBLIC_APi_URL"
+        title="NEXT_PUBLIC_API_URL"
         description={`${origin}/api/${params.storeId}`}
         variant="public"
       />
